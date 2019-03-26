@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nuesoft.dao.BookInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.nuesoft.po.BookInfo" >
+    <id column="book_id" property="bookId" jdbcType="INTEGER" />
+    <result column="book_code" property="bookCode" jdbcType="VARCHAR" />
+    <result column="book_name" property="bookName" jdbcType="VARCHAR" />
+    <result column="book_type" property="bookType" jdbcType="INTEGER" />
+    <result column="book_author" property="bookAuthor" jdbcType="VARCHAR" />
+    <result column="publish_press" property="publishPress" jdbcType="VARCHAR" />
+    <result column="publish_date" property="publishDate" jdbcType="DATE" />
+    <result column="is_borrow" property="isBorrow" jdbcType="INTEGER" />
+    <result column="book_path" property="bookPath" jdbcType="VARCHAR" />
+    <association property="bookTypes" javaType="com.nuesoft.po.BookType">
+      <id column="type_id" property="typeId" jdbcType="INTEGER" />
+      <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    book_id, book_code, book_name, book_type, book_author, publish_press, publish_date, 
+    is_borrow, book_path
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.nuesoft.po.BookInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from book_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from book_info
+    where book_id = #{bookId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAllBook" resultMap="BaseResultMap">
+    select * from book_info bi join book_type bt on bi.book_type=bt.type_id
+    <where>
+      <if test="bookid!=0">
+        bi.book_id=#{bookid}
+      </if>
+      <if test="bookname!=null">
+       and bi.book_name like concat('%',#{bookname},'%')
+      </if>
+      <if test="borrow!=-1">
+       and bi.is_borrow=#{borrow}
+      </if>
+    </where>
+    order by bi.book_code asc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from book_info
+    where book_id = #{bookId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByIds">
+      delete from book_info where book_id in
+      <foreach collection="array" open="(" separator="," close=")" item="ids">
+          #{ids}
+      </foreach>
+  </delete>
+  <insert id="insert" parameterType="com.nuesoft.po.BookInfo" >
+    insert into book_info (book_id, book_code, book_name, 
+      book_type, book_author, publish_press, 
+      publish_date, is_borrow, book_path
+      )
+    values (#{bookId,jdbcType=INTEGER}, #{bookCode,jdbcType=VARCHAR}, #{bookName,jdbcType=VARCHAR}, 
+      #{bookType,jdbcType=INTEGER}, #{bookAuthor,jdbcType=VARCHAR}, #{publishPress,jdbcType=VARCHAR}, 
+      #{publishDate,jdbcType=DATE}, #{isBorrow,jdbcType=INTEGER}, #{bookPath,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.nuesoft.po.BookInfo" >
+    insert into book_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bookId != null" >
+        book_id,
+      </if>
+      <if test="bookCode != null" >
+        book_code,
+      </if>
+      <if test="bookName != null" >
+        book_name,
+      </if>
+      <if test="bookType != null" >
+        book_type,
+      </if>
+      <if test="bookAuthor != null" >
+        book_author,
+      </if>
+      <if test="publishPress != null" >
+        publish_press,
+      </if>
+      <if test="publishDate != null" >
+        publish_date,
+      </if>
+      <if test="isBorrow != null" >
+        is_borrow,
+      </if>
+      <if test="bookPath != null" >
+        book_path,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bookId != null" >
+        #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="bookCode != null" >
+        #{bookCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bookName != null" >
+        #{bookName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookType != null" >
+        #{bookType,jdbcType=INTEGER},
+      </if>
+      <if test="bookAuthor != null" >
+        #{bookAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="publishPress != null" >
+        #{publishPress,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDate != null" >
+        #{publishDate,jdbcType=DATE},
+      </if>
+      <if test="isBorrow != null" >
+        #{isBorrow,jdbcType=INTEGER},
+      </if>
+      <if test="bookPath != null" >
+        #{bookPath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.nuesoft.po.BookInfo" >
+    update book_info
+    <set >
+      <if test="bookCode != null" >
+        book_code = #{bookCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bookName != null" >
+        book_name = #{bookName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookType != null" >
+        book_type = #{bookType,jdbcType=INTEGER},
+      </if>
+      <if test="bookAuthor != null" >
+        book_author = #{bookAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="publishPress != null" >
+        publish_press = #{publishPress,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDate != null" >
+        publish_date = #{publishDate,jdbcType=DATE},
+      </if>
+      <if test="isBorrow != null" >
+        is_borrow = #{isBorrow,jdbcType=INTEGER},
+      </if>
+      <if test="bookPath != null" >
+        book_path = #{bookPath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where book_id = #{bookId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.nuesoft.po.BookInfo" >
+    update book_info
+    set book_code = #{bookCode,jdbcType=VARCHAR},
+      book_name = #{bookName,jdbcType=VARCHAR},
+      book_type = #{bookType,jdbcType=INTEGER},
+      book_author = #{bookAuthor,jdbcType=VARCHAR},
+      publish_press = #{publishPress,jdbcType=VARCHAR},
+      publish_date = #{publishDate,jdbcType=DATE},
+      is_borrow = #{isBorrow,jdbcType=INTEGER},
+      book_path = #{bookPath,jdbcType=VARCHAR}
+    where book_id = #{bookId,jdbcType=INTEGER}
+  </update>
+
+</mapper>
