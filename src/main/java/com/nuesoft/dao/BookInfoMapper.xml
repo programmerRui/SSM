@@ -73,7 +73,7 @@
     select * from book_info bi join book_type bt on bi.book_type=bt.type_id
     <where>
       <if test="bookid!=0">
-        bi.book_id=#{bookid}
+        bi.book_type=#{bookid}
       </if>
       <if test="bookname!=null">
        and bi.book_name like concat('%',#{bookname},'%')
